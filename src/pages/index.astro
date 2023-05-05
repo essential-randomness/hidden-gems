@@ -9,25 +9,40 @@ import type { ProfileView } from "@atproto/api/dist/client/types/app/bsky/actor/
 const { BSKY_USERNAME, BSKY_PASSWORD } = import.meta.env;
 let followersData: ProfileView[] | null = null;
 if (Astro.request.method === "POST") {
-  const AGENT = new BskyAgent({
-    service: "https://bsky.social",
-    persistSession: (_evt: AtpSessionEvent, sess?: AtpSessionData) => {
-      if (sess) {
-        Astro.cookies.set("bsky-session", sess);
-      }
-    },
-  });
-  const { data: user } = await AGENT.login({
-    identifier: BSKY_USERNAME,
-    password: BSKY_PASSWORD,
-  });
-  followersData = (
-    await AGENT.getFollowers({
-      actor: user.did,
-    })
-  ).data.followers;
+  try {
+    const data = await Astro.request.formData();
+    if (data.has("logout")) {
+      Astro.cookies.delete("bsky-session");
+    } else if (data.has("email") && data.has("password")) {
+      const AGENT = new BskyAgent({
+        service: "https://bsky.social",
+        persistSession: (_evt: AtpSessionEvent, sess?: AtpSessionData) => {
+          if (sess) {
+            Astro.cookies.set("bsky-session", sess);
+          }
+        },
+      });
+      const { data: user } = await AGENT.login({
+        identifier: BSKY_USERNAME,
+        password: BSKY_PASSWORD,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+  }
+  const sess = Astro.cookies.get("bsky-session");
+  if (sess.value) {
+    const AGENT = new BskyAgent({
+      service: "https://bsky.social",
+    });
+    const user = await AGENT.resumeSession(sess.json());
+    followersData = (
+      await AGENT.getFollowers({
+        actor: user.data.did,
+      })
+    ).data.followers;
+  }
 }
-console.log(followersData);
 ---
 
 <html lang="en">
@@ -40,6 +55,7 @@ console.log(followersData);
   </head>
   <body>
     <h1>Find the Hidden Gems following you 💎</h1>
-    {followersData ? <FollowersList followers={followersData} /> : <Login />}
+    <Login />
+    {followersData && <FollowersList followers={followersData} />}
   </body>
 </html>

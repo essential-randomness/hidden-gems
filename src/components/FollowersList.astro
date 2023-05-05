@@ -51,8 +51,8 @@ const ratio = (profile: ProfileViewDetailed) => {
             "bg-red-500": ratio(f) < 1,
           })}
         >
-          <img src={f.avatar} class="max-w-[150px] aspect-square" />
-          <div class="flex flex-col ">
+          <img src={f.avatar} class="max-w-[150px] aspect-square rounded-md" />
+          <div class="flex flex-col">
             <div>
               {f.displayName} ({f.did})
             </div>
@@ -60,9 +60,10 @@ const ratio = (profile: ProfileViewDetailed) => {
             <div>follows: {f.followsCount}</div>
             <div>ratio: {ratio(f)}</div>
             <div>mutuals: {f.viewer?.following ? "yes" : "no"}</div>
+            <div>{f.description}</div>
             <div>
               <a href={`https://staging.bsky.app/profile/${f.handle}`}>
-                {f.handle}
+                @{f.handle}
               </a>
             </div>
           </div>

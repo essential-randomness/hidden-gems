@@ -1,9 +1,27 @@
 ---
 const { BSKY_USERNAME, BSKY_PASSWORD } = import.meta.env;
+
+let user: { did: string } | null = null;
+const sess = Astro.cookies.get("bsky-session").value;
 ---
 
-<form method="post">
-  <input id="email" name="email" type="email" required value={BSKY_USERNAME} />
-  <input name="password" type="password" required value={BSKY_PASSWORD} />
-  <input type="submit" />
-</form>
+{
+  sess ? (
+    <form method="post">
+      <input type="hidden" name="logout" />
+      <input type="submit" value="logout" />
+    </form>
+  ) : (
+    <form method="post">
+      <input
+        id="email"
+        name="email"
+        type="email"
+        required
+        value={BSKY_USERNAME}
+      />
+      <input name="password" type="password" required value={BSKY_PASSWORD} />
+      <input type="submit" />
+    </form>
+  )
+}
