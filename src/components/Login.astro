@@ -1,0 +1,9 @@
+---
+const { BSKY_USERNAME, BSKY_PASSWORD } = import.meta.env;
+---
+
+<form method="post">
+  <input id="email" name="email" type="email" required value={BSKY_USERNAME} />
+  <input name="password" type="password" required value={BSKY_PASSWORD} />
+  <input type="submit" />
+</form>
