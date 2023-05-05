@@ -4,6 +4,7 @@ import type {
   ProfileView,
   ProfileViewDetailed,
 } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
+import clsx from "clsx";
 
 interface Props {
   followers: ProfileView[];
@@ -28,6 +29,7 @@ if (sess) {
     )
   );
 }
+
 const ratio = (profile: ProfileViewDetailed) => {
   if (!profile.followersCount) {
     return 1000;
@@ -39,26 +41,32 @@ const ratio = (profile: ProfileViewDetailed) => {
 };
 ---
 
-<div>
+<div class="mx-6 border rounded-lg overflow-hidden divide-y">
   {
-    followersData?.map((f) => (
-      <div class="flex bg-red-500">
-        <img src={f.avatar} class="max-w-xs" />
-        <div class="flex flex-col">
-          <div>
-            {f.displayName} ({f.did})
-          </div>
-          <div>followers: {f.followersCount}</div>
-          <div>follows: {f.followsCount}</div>
-          <div>ratio: {ratio(f)}</div>
-          <div>mutuals: {f.viewer?.following ? "yes" : "no"}</div>
-          <div>
-            <a href={`https://staging.bsky.app/profile/${f.handle}`}>
-              {f.handle}
-            </a>
+    followersData
+      ?.sort((a, b) => ratio(b) - ratio(a))
+      .map((f) => (
+        <div
+          class={clsx("flex items-center p-4 gap-4", {
+            "bg-red-500": ratio(f) < 1,
+          })}
+        >
+          <img src={f.avatar} class="max-w-[150px] aspect-square" />
+          <div class="flex flex-col ">
+            <div>
+              {f.displayName} ({f.did})
+            </div>
+            <div>followers: {f.followersCount}</div>
+            <div>follows: {f.followsCount}</div>
+            <div>ratio: {ratio(f)}</div>
+            <div>mutuals: {f.viewer?.following ? "yes" : "no"}</div>
+            <div>
+              <a href={`https://staging.bsky.app/profile/${f.handle}`}>
+                {f.handle}
+              </a>
+            </div>
           </div>
         </div>
-      </div>
-    ))
+      ))
   }
 </div>
