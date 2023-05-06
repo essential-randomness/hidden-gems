@@ -1,23 +1,21 @@
 ---
 import { BskyAgent } from "@atproto/api";
-import type {
-  ProfileView,
-  ProfileViewDetailed,
-} from "@atproto/api/dist/client/types/app/bsky/actor/defs";
+import type { ProfileViewDetailed } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
 import clsx from "clsx";
+import FollowerCard from "./FollowerCard.astro";
 
-interface Props {
-  followers: ProfileView[];
-}
-
-const followers = Astro.props.followers;
 const AGENT = new BskyAgent({
   service: "https://bsky.social",
 });
 let followersData = null;
 const sess = Astro.cookies.get("bsky-session");
-if (sess) {
-  await AGENT.resumeSession(sess.json());
+if (sess.value) {
+  const user = await AGENT.resumeSession(sess.json());
+  const followers = (
+    await AGENT.getFollowers({
+      actor: user.data.did,
+    })
+  ).data.followers;
   followersData = await Promise.all(
     followers.map(
       async (f) =>
@@ -45,29 +43,9 @@ const ratio = (profile: ProfileViewDetailed) => {
   {
     followersData
       ?.sort((a, b) => ratio(b) - ratio(a))
-      .map((f) => (
-        <div
-          class={clsx("flex items-center p-4 gap-4", {
-            "bg-red-500": ratio(f) < 1,
-          })}
-        >
-          <img src={f.avatar} class="max-w-[150px] aspect-square rounded-md" />
-          <div class="flex flex-col">
-            <div>
-              {f.displayName} ({f.did})
-            </div>
-            <div>followers: {f.followersCount}</div>
-            <div>follows: {f.followsCount}</div>
-            <div>ratio: {ratio(f)}</div>
-            <div>mutuals: {f.viewer?.following ? "yes" : "no"}</div>
-            <div>{f.description}</div>
-            <div>
-              <a href={`https://staging.bsky.app/profile/${f.handle}`}>
-                @{f.handle}
-              </a>
-            </div>
-          </div>
-        </div>
-      ))
+      .map((f) => <FollowerCard follower={f} ratio={ratio(f)} />)
   }
 </div>
+<script>
+  document.getElementById("mutuals")?.addEventListener("checj", () => {});
+</script>
