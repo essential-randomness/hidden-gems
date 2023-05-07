@@ -1,13 +1,16 @@
+import * as bsky from "@atproto/api";
+
 import type {
   ProfileView,
   ProfileViewDetailed,
 } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
 
-import { BskyAgent } from "@atproto/api";
 import FollowerCard from "./FollowerCard";
 import React from "react";
 import Settings from "./Settings";
 import clsx from "clsx";
+
+const { BskyAgent } = bsky;
 
 const ratio = (profile: ProfileViewDetailed) => {
   if (!profile.followersCount) {
