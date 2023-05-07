@@ -47,12 +47,15 @@ const resumeSession = async () => {
   ).data;
 };
 
-const MAX_FOLLOWERS = 100;
+const MAX_FOLLOWERS = 2000;
 const checkMaxFollowers = async (user: { did: string }) => {
   const profile = await AGENT.getProfile({ actor: user.did });
   if (profile.data.followersCount! > MAX_FOLLOWERS) {
     throw new Error(
-      "The BlueSky API rate limiter says you have too many followers."
+      "Beware: you have a lot of followers. The BlueSky API rate limiter might fuck you up.",
+      {
+        cause: "TOO_MANY_FOLLOWERS",
+      }
     );
   }
 };
@@ -62,7 +65,6 @@ const getFollowersData = async (
   user: { did: string },
   progress: (chunk: number, total: number) => void
 ) => {
-  await checkMaxFollowers(user);
   const followers: ProfileView[] = [];
   const data = (
     await AGENT.getFollowers({
@@ -126,11 +128,15 @@ export default function () {
   const [algorithm, setAlgorithm] = React.useState<"ratio" | "following">(
     "ratio"
   );
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<Error | null>(null);
+  const [tryAnyway, setTryAnyway] = React.useState<boolean>(false);
 
   const fetchData = async () => {
     setLoading("Loading...");
     const user = await resumeSession();
+    if (!tryAnyway) {
+      await checkMaxFollowers(user);
+    }
     setFollowers(
       await getFollowersData(user, (current, total) => {
         setLoading(`Loading chunk ${current} of ${total}`);
@@ -140,15 +146,30 @@ export default function () {
   };
 
   React.useEffect(() => {
-    fetchData().catch((e) => setError((e as Error).message));
-  }, []);
+    fetchData().catch((e) => setError(e as Error));
+  }, [tryAnyway]);
 
   if (!getSession()) {
     return <></>;
   }
 
   if (error) {
-    return <div className="text-red-600">{error}</div>;
+    return (
+      <div className="text-red-600">
+        {error.message}
+        {error.cause == "TOO_MANY_FOLLOWERS" && (
+          <button
+            onClick={() => {
+              setTryAnyway(true);
+              setError(null);
+            }}
+            className="block p-4 rounded-xl border mx-auto my-2"
+          >
+            Try anyway
+          </button>
+        )}
+      </div>
+    );
   }
 
   if (loading) {
