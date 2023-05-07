@@ -1,8 +1,8 @@
 ---
 import * as bsky from "@atproto/api";
-console.log("bsky", bsky.default);
+console.log("bsky", bsky);
 console.log("hello hello hello");
-const { BskyAgent } = bsky;
+const { BskyAgent } = bsky.default;
 console.log("bsky-agent", BskyAgent);
 import type { AtpSessionEvent, AtpSessionData } from "@atproto/api";
 
