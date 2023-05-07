@@ -62,6 +62,7 @@ const getFollowersData = async (user: { did: string }) => {
     followers.push(...data.followers);
     cursor = data.cursor;
   }
+
   return await Promise.all(
     followers.map(
       async (f) =>
