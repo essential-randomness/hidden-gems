@@ -27,6 +27,8 @@ if (Astro.request.method === "POST") {
     });
   }
 }
+
+const description = `Order your followers by their followers/following ratio, and fight the dishonorable practice of fishing for "follow backs".`;
 ---
 
 <html lang="en">
@@ -35,7 +37,13 @@ if (Astro.request.method === "POST") {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Astro</title>
+    <title>Hidden Gems 💎</title>
+    <meta property="twitter:description" content={description} />
+    <meta property="description" content={description} />
+    <meta property="og:description" content={description} />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:image" content="/preview.jpeg" />
+    <meta property="og:image" content="/preview.jpeg" />
   </head>
   <body class="flex flex-col gap-4 items-center p-4">
     <h1 class="text-xl">Hidden Gems 💎</h1>
@@ -45,6 +53,11 @@ if (Astro.request.method === "POST") {
     </div>
     <a href="https://github.com/essential-randomness/hidden-gems"
       ><img class="max-w-[50px]" src="/github-mark.png" /></a
+    >
+    <a
+      class="underline hover:text-cyan-500"
+      href="https://staging.bsky.app/profile/essentialrandom.bsky.social"
+      >A Random Production™</a
     >
     <Login />
     <FollowersList client:only />
