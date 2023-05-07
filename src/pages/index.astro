@@ -1,6 +1,8 @@
 ---
 import * as bsky from "@atproto/api";
-const { BskyAgent } = bsky.default;
+// TODO: I don't know why this needs .default (only on Vercel), and at this point i'm tired of fighting with it
+// @ts-ignore
+const { BskyAgent } = bsky.BskyAgent ? bsky : bsky.default;
 import type { AtpSessionEvent, AtpSessionData } from "@atproto/api";
 
 import Login from "../components/Login.astro";
@@ -11,7 +13,6 @@ if (Astro.request.method === "POST") {
   if (data.has("logout")) {
     Astro.cookies.delete("bsky-session");
   } else if (data.has("bsky_email") && data.has("bsky_password")) {
-    console.log("here");
     const AGENT = new BskyAgent({
       service: "https://bsky.social",
       persistSession: (_evt: AtpSessionEvent, sess?: AtpSessionData) => {
@@ -42,6 +43,9 @@ if (Astro.request.method === "POST") {
       Order your followers by their followers/following ratio, and fight the
       dishonorable practice of fishing for "follow backs".
     </div>
+    <a href="https://github.com/essential-randomness/hidden-gems"
+      ><img class="max-w-[50px]" src="/github-mark.png" /></a
+    >
     <Login />
     <FollowersList client:only />
   </body>
