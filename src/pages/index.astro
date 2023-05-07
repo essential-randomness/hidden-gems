@@ -2,6 +2,7 @@
 import * as bsky from "@atproto/api";
 console.log(bsky);
 const { BskyAgent } = bsky;
+console.log(BskyAgent);
 import type { AtpSessionEvent, AtpSessionData } from "@atproto/api";
 
 import Login from "../components/Login.astro";
@@ -12,6 +13,7 @@ if (Astro.request.method === "POST") {
   if (data.has("logout")) {
     Astro.cookies.delete("bsky-session");
   } else if (data.has("bsky_email") && data.has("bsky_password")) {
+    console.log("here");
     const AGENT = new BskyAgent({
       service: "https://bsky.social",
       persistSession: (_evt: AtpSessionEvent, sess?: AtpSessionData) => {
