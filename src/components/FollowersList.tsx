@@ -14,6 +14,10 @@ const ratio = (profile: ProfileViewDetailed) => {
   return profile.followersCount / profile.followsCount;
 };
 
+const AGENT = new BskyAgent({
+  service: "https://bsky.social",
+});
+
 const resumeSession = async () => {
   const cookieValue = document.cookie
     .split("; ")
@@ -45,12 +49,11 @@ const getFollowersData = async (user: { did: string }) => {
   );
 };
 
-const AGENT = new BskyAgent({
-  service: "https://bsky.social",
-});
-
 export default function () {
-  const [followers, setFollowers] = React.useState<ProfileViewDetailed[]>([]);
+  const [followers, setFollowers] = React.useState<
+    ProfileViewDetailed[] | null
+  >(null);
+  const [hideMutuals, setHideMutuals] = React.useState<boolean>(false);
 
   const fetchData = async () => {
     const user = await resumeSession();
@@ -62,17 +65,34 @@ export default function () {
   }, []);
 
   return (
-    <div className="mx-6 border rounded-lg overflow-hidden divide-y">
-      {followers
-        ?.sort((a, b) => ratio(b) - ratio(a))
-        .map((f) => (
-          <FollowerCard
-            key={f.did}
-            follower={f}
-            ratio={ratio(f)}
-            agent={AGENT}
+    <>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={hideMutuals}
+            onChange={() => {
+              setHideMutuals((hideMutuals) => !hideMutuals);
+            }}
           />
-        ))}
-    </div>
+          Hide mutuals
+        </label>
+      </div>
+      {followers && (
+        <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-3 mx-6 overflow-hidden divide-y w-100">
+          {followers
+            .filter((f) => !hideMutuals || !f.viewer?.following)
+            .sort((a, b) => ratio(b) - ratio(a))
+            .map((f) => (
+              <FollowerCard
+                key={f.did}
+                follower={f}
+                ratio={ratio(f)}
+                agent={AGENT}
+              />
+            ))}
+        </div>
+      )}
+    </>
   );
 }

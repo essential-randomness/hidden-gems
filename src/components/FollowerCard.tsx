@@ -11,49 +11,61 @@ interface Props {
 
 export default function (props: Props) {
   const { follower, ratio, agent } = props;
-  const mutuals = follower.viewer?.following;
+  const [mutuals, setMutuals] = React.useState(!!follower.viewer?.following);
+  const [loading, setLoading] = React.useState(false);
 
   return (
     <div
-      className={clsx("flex items-center p-4 gap-4 relative", {
-        "bg-red-500": ratio < 1,
-        "opacity-70 bg-gray-100": mutuals,
-      })}
+      className={clsx(
+        "flex items-center p-4 gap-4 relative max-w-[600px] border rounded-lg",
+        {
+          "bg-red-500": ratio < 1,
+          "opacity-70 bg-gray-100": mutuals,
+        }
+      )}
     >
-      <img
-        src={follower.avatar}
-        className="max-w-[150px] aspect-square rounded-md"
-      />
+      <div>
+        <img
+          src={follower.avatar}
+          className="max-w-[100px] aspect-square rounded-md"
+        />
+        <div className="p-4">{mutuals && <div>Mutuals</div>}</div>
+      </div>
       <div className="flex flex-col">
         <div>
-          {follower.displayName} ({follower.did})
-        </div>
-        <div>followers: {follower.followersCount}</div>
-        <div>follows: {follower.followsCount}</div>
-        <div>ratio: {ratio}</div>
-        <div className="absolute top-0 right-0 p-4">
-          {mutuals ? (
-            "mutuals"
-          ) : (
-            <button
-              onClick={async (e) => {
-                const target = e.currentTarget;
-                target.textContent = "Following...";
-                target.disabled = true;
-                await agent.follow(follower.did);
-                target.textContent = "Followed";
-              }}
-            >
-              Follow
-            </button>
-          )}
-        </div>
-        <div>{follower.description}</div>
-        <div>
+          {follower.displayName} (
           <a href={`https://staging.bsky.app/profile/${follower.handle}`}>
             @{follower.handle}
           </a>
+          )
         </div>
+        <ul className="list-disc ml-6">
+          <li>followers: {follower.followersCount}</li>
+          <li>follows: {follower.followsCount}</li>
+          <li>ratio: {ratio.toFixed(2)}</li>
+        </ul>
+        <div>
+          <button
+            className="flex justify-center m-2 p-2 border rounded-md border-gray-500"
+            onClick={async (e) => {
+              if (loading) {
+                return;
+              }
+              setLoading(true);
+              await (mutuals
+                ? agent.deleteFollow(follower.did)
+                : agent.follow(follower.did));
+              setMutuals((mutuals) => !mutuals);
+              setLoading(false);
+            }}
+            disabled={loading}
+          >
+            {loading && "Hold on"}
+            {!loading && (mutuals ? "Unfollow" : "Follow")}
+          </button>
+        </div>
+        <div>{follower.description}</div>
+        <div></div>
       </div>
     </div>
   );
