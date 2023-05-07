@@ -63,6 +63,10 @@ const description = `Order your followers by their followers/following ratio, an
       Note: there's no pagination (I'm lazy), so if you have a lot of followers
       it might take a while to load.
     </div>
+    <div class="text-xs text-red-600">
+      Important note: Bsky API has a 3000 req/5min limit. If you have a lot of
+      followers, don't reload this page too much.
+    </div>
     <Login />
     <FollowersList client:only />
   </body>
