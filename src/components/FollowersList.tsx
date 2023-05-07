@@ -23,11 +23,15 @@ const AGENT = new BskyAgent({
   service: "https://bsky.social",
 });
 
-const resumeSession = async () => {
-  const cookieValue = document.cookie
+const getSession = () => {
+  return document.cookie
     .split("; ")
     .find((row) => row.startsWith("bsky-session"))
     ?.split("=")[1];
+};
+
+const resumeSession = async () => {
+  const cookieValue = getSession();
   if (!cookieValue) {
     throw new Error("Bluesky session not found");
   }
@@ -93,8 +97,12 @@ export default function () {
     fetchData();
   }, []);
 
-  if (!followers) {
+  if (!getSession()) {
     return <></>;
+  }
+
+  if (loading) {
+    return <div>Loading your followers...</div>;
   }
 
   return (
