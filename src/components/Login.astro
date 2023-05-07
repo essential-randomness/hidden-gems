@@ -8,18 +8,38 @@ const sess = Astro.cookies.get("bsky-session").value;
   sess ? (
     <form method="post">
       <input type="hidden" name="logout" />
-      <input type="submit" value="logout" />
+      <input
+        type="submit"
+        value="logout"
+        class="border border-gray-200 p-4 rounded-lg bg-slate-300"
+      />
     </form>
   ) : (
-    <form method="post">
-      <input name="bsky_email" type="email" required value={BSKY_USERNAME} />
+    <form class="flex flex-col max-w-sm gap-4" method="post">
+      <label>
+        Email:
+        <input
+          class="border border-gray-200 w-full"
+          name="bsky_email"
+          type="email"
+          required
+          value={BSKY_USERNAME}
+        />
+      </label>
+      <label>
+        Password:
+        <input
+          class="border border-gray-200 w-full"
+          name="bsky_password"
+          type="password"
+          required
+          value={BSKY_PASSWORD}
+        />
+      </label>
       <input
-        name="bsky_password"
-        type="password"
-        required
-        value={BSKY_PASSWORD}
+        type="submit"
+        class="border border-gray-200 p-4 rounded-lg bg-slate-300"
       />
-      <input type="submit" />
     </form>
   )
 }

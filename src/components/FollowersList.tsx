@@ -1,6 +1,10 @@
+import type {
+  ProfileView,
+  ProfileViewDetailed,
+} from "@atproto/api/dist/client/types/app/bsky/actor/defs";
+
 import { BskyAgent } from "@atproto/api";
 import FollowerCard from "./FollowerCard";
-import type { ProfileViewDetailed } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
 import React from "react";
 import clsx from "clsx";
 
@@ -32,11 +36,24 @@ const resumeSession = async () => {
 };
 
 const getFollowersData = async (user: { did: string }) => {
-  const followers = (
+  const followers: ProfileView[] = [];
+  const data = (
     await AGENT.getFollowers({
       actor: user.did,
     })
-  ).data.followers;
+  ).data;
+  followers.push(...data.followers);
+  let cursor = data.cursor;
+  while (cursor) {
+    const data = (
+      await AGENT.getFollowers({
+        actor: user.did,
+        cursor,
+      })
+    ).data;
+    followers.push(...data.followers);
+    cursor = data.cursor;
+  }
   return await Promise.all(
     followers.map(
       async (f) =>
@@ -54,15 +71,22 @@ export default function () {
     ProfileViewDetailed[] | null
   >(null);
   const [hideMutuals, setHideMutuals] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   const fetchData = async () => {
+    setLoading(true);
     const user = await resumeSession();
     setFollowers(await getFollowersData(user));
+    setLoading(false);
   };
 
   React.useEffect(() => {
     fetchData();
   }, []);
+
+  if (!followers) {
+    return <></>;
+  }
 
   return (
     <>

@@ -34,11 +34,11 @@ if (Astro.request.method === "POST") {
     <meta name="generator" content={Astro.generator} />
     <title>Astro</title>
   </head>
-  <body>
-    <h1>Find the Hidden Gems following you 💎</h1>
-    <div>
-      Fight the dishonorable practice of fishing for "follow backs" by ordering
-      those who follow you according to their followers/following ratio.
+  <body class="flex flex-col gap-4 items-center p-4">
+    <h1 class="text-xl">Hidden Gems 💎</h1>
+    <div class="max-w-md">
+      Order your followers according to their followers/following ratio, and
+      fight the dishonorable practice of fishing for "follow backs".
     </div>
     <Login />
     <FollowersList client:load />
