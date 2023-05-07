@@ -40,8 +40,8 @@ export default function (props: Props) {
           )
         </div>
         <ul className="list-disc ml-6">
-          <li>followers: {follower.followersCount}</li>
           <li>follows: {follower.followsCount}</li>
+          <li>followers: {follower.followersCount}</li>
           <li>ratio: {ratio.toFixed(2)}</li>
         </ul>
         <div>
