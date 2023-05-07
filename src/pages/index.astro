@@ -3,7 +3,7 @@ import { BskyAgent } from "@atproto/api";
 import type { AtpSessionEvent, AtpSessionData } from "@atproto/api";
 
 import Login from "../components/Login.astro";
-import FollowersList from "../components/FollowersList.astro";
+import FollowersList from "../components/FollowersList";
 
 if (Astro.request.method === "POST") {
   const data = await Astro.request.formData();
@@ -37,6 +37,6 @@ if (Astro.request.method === "POST") {
   <body>
     <h1>Find the Hidden Gems following you 💎</h1>
     <Login />
-    <FollowersList />
+    <FollowersList client:load />
   </body>
 </html>
