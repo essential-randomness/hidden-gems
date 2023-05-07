@@ -34,7 +34,11 @@ export default function (props: Props) {
       <div className="flex flex-col">
         <div>
           {follower.displayName} (
-          <a href={`https://staging.bsky.app/profile/${follower.handle}`}>
+          <a
+            target="_blank"
+            className="underline hover:text-blue-500"
+            href={`https://staging.bsky.app/profile/${follower.handle}`}
+          >
             @{follower.handle}
           </a>
           )
@@ -43,6 +47,7 @@ export default function (props: Props) {
           <li>follows: {follower.followsCount}</li>
           <li>followers: {follower.followersCount}</li>
           <li>ratio: {ratio.toFixed(2)}</li>
+          <li>posts: {follower.postsCount}</li>
         </ul>
         <div>
           <button
