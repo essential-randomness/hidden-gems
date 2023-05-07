@@ -26,7 +26,7 @@ const sess = Astro.cookies.get("bsky-session").value;
         />
       </label>
       <label>
-        Password (try an <a href="">app password</a>):
+        Password:
         <input
           class="border border-gray-200 w-full"
           name="bsky_password"
@@ -34,6 +34,16 @@ const sess = Astro.cookies.get("bsky-session").value;
           required
           value={BSKY_PASSWORD}
         />
+        <div class="text-xs mt-2">
+          You should use an{" "}
+          <a
+            target="_blank"
+            class="underline hover:text-cyan-500"
+            href="https://staging.bsky.app/settings/app-passwords"
+          >
+            app password
+          </a>
+        </div>
       </label>
       <input
         type="submit"
