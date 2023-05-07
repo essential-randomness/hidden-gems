@@ -6,6 +6,7 @@ import type {
 import { BskyAgent } from "@atproto/api";
 import FollowerCard from "./FollowerCard";
 import React from "react";
+import Settings from "./Settings";
 import clsx from "clsx";
 
 const ratio = (profile: ProfileViewDetailed) => {
@@ -66,12 +67,20 @@ const getFollowersData = async (user: { did: string }) => {
   );
 };
 
+const ratioSort = (a: ProfileViewDetailed, b: ProfileViewDetailed) =>
+  ratio(b) - ratio(a);
+const followsSort = (a: ProfileViewDetailed, b: ProfileViewDetailed) =>
+  a.followsCount! - b.followsCount!;
+
 export default function () {
   const [followers, setFollowers] = React.useState<
     ProfileViewDetailed[] | null
   >(null);
   const [hideMutuals, setHideMutuals] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [algorithm, setAlgorithm] = React.useState<"ratio" | "following">(
+    "ratio"
+  );
 
   const fetchData = async () => {
     setLoading(true);
@@ -90,23 +99,17 @@ export default function () {
 
   return (
     <>
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={hideMutuals}
-            onChange={() => {
-              setHideMutuals((hideMutuals) => !hideMutuals);
-            }}
-          />
-          Hide mutuals
-        </label>
-      </div>
+      <Settings
+        hideMutuals={hideMutuals}
+        setHideMutuals={setHideMutuals}
+        algorithm={algorithm}
+        setAlgorithm={setAlgorithm}
+      />
       {followers && (
         <div className="grid sm:grid-cols-1 lg:grid-cols-3 gap-3 mx-6 overflow-hidden divide-y w-100">
           {followers
             .filter((f) => !hideMutuals || !f.viewer?.following)
-            .sort((a, b) => ratio(b) - ratio(a))
+            .sort(algorithm == "ratio" ? ratioSort : followsSort)
             .map((f) => (
               <FollowerCard
                 key={f.did}

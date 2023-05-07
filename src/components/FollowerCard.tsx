@@ -53,7 +53,7 @@ export default function (props: Props) {
               }
               setLoading(true);
               await (mutuals
-                ? agent.deleteFollow(follower.did)
+                ? agent.deleteFollow(follower.viewer!.following!)
                 : agent.follow(follower.did));
               setMutuals((mutuals) => !mutuals);
               setLoading(false);
